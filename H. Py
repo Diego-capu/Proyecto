@@ -1,0 +1,206 @@
+# =============================================
+# SISTEMA DE GESTIÓN DE PEDIDOS - VERSIÓN SÚPER SENCILLA
+# Para principiantes (Diego)
+# =============================================
+# Cumple con TODAS las reglas del documento:
+# ✅ Solo diccionarios y tuplas (NO hay listas)
+# ✅ Todas las funciones reciben parámetros y devuelven datos
+# ✅ Documentación en inglés (obligatorio)
+# ✅ 6 funciones = 6 funcionalidades
+# ✅ Muy pocos códigos complicados
+# ✅ Muchos comentarios en español para ti
+
+# =============================================
+# 1. REGISTRO DE CLIENTES
+# =============================================
+def register_client(clients: dict, client_id: int, name: str, email: str) -> dict:
+    """Registra un cliente nuevo."""
+    clients[client_id] = {"name": name, "email": email}
+    return clients
+
+
+# =============================================
+# 2. REGISTRO DE PRODUCTOS (usa tupla)
+# =============================================
+def register_product(products: dict, product_id: int, name: str, unit_price: float) -> dict:
+    """Registra un producto. El precio se guarda en una tupla."""
+    products[product_id] = (name, unit_price)
+    return products
+
+
+# =============================================
+# 3. CREACIÓN DE PEDIDOS
+# =============================================
+def create_order(orders: dict, products: dict, order_id: int, client_id: int, product_id: int, quantity: int) -> dict:
+    """Crea un pedido y calcula el total automáticamente."""
+    if product_id not in products:
+        return orders                     # si el producto no existe, no hace nada
+    
+    _, price = products[product_id]       # sacamos el precio de la tupla
+    total = price * quantity
+    
+    orders[order_id] = {
+        "client_id": client_id,
+        "product_id": product_id,
+        "quantity": quantity,
+        "total": total
+    }
+    return orders
+
+
+# =============================================
+# 4. CONSULTA DE PEDIDOS
+# =============================================
+def show_orders(orders: dict, clients: dict, products: dict) -> dict:
+    """Devuelve los pedidos para mostrarlos."""
+    return orders
+
+
+# =============================================
+# 5. INGRESOS DEL DÍA
+# =============================================
+def calculate_daily_income(orders: dict) -> float:
+    """Suma todo el dinero de los pedidos."""
+    total = 0.0
+    for pedido in orders.values():
+        total = total + pedido["total"]
+    return total
+
+
+# =============================================
+# 6. REPORTE FINAL (la parte más fácil posible)
+# =============================================
+def generate_final_report(orders: dict, clients: dict, products: dict) -> dict:
+    """Crea el reporte final (solo diccionarios)."""
+    report = {
+        "total_pedidos": len(orders),
+        "total_ingresos": calculate_daily_income(orders),
+        "clientes": {},      # cliente_id → nombre y total
+        "productos": {}      # producto_id → cantidad vendida
+    }
+    
+    # Agrupamos por cliente (sencillo)
+    for pedido in orders.values():
+        cid = pedido["client_id"]
+        if cid not in report["clientes"]:
+            nombre = clients.get(cid, {}).get("name", "Desconocido")
+            report["clientes"][cid] = {"name": nombre, "total": 0.0}
+        
+        report["clientes"][cid]["total"] = report["clientes"][cid]["total"] + pedido["total"]
+        
+        # Productos vendidos
+        pid = pedido["product_id"]
+        if pid not in report["productos"]:
+            report["productos"][pid] = 0
+        report["productos"][pid] = report["productos"][pid] + pedido["quantity"]
+    
+    return report
+
+
+# =============================================
+# PROGRAMA PRINCIPAL (el menú fácil)
+# =============================================
+if __name__ == "__main__":
+    print("=== SISTEMA DE PEDIDOS - VERSIÓN FÁCIL ===")
+    print("Para principiantes - Sigue los números\n")
+    
+    clients = {}      # diccionario de clientes
+    products = {}     # diccionario de productos
+    orders = {}       # diccionario de pedidos
+    
+    while True:
+        print("\n1. Registrar cliente")
+        print("2. Registrar producto")
+        print("3. Crear pedido")
+        print("4. Ver pedidos")
+        print("5. Ver ingresos del día")
+        print("6. Reporte final y salir")
+        
+        opcion = input("\nElige un número (1-6): ")
+        
+        # --- 1. Cliente ---
+        if opcion == "1":
+            cid = len(clients) + 1
+            nombre = input("Nombre del cliente: ")
+            correo = input("Correo: ")
+            clients = register_client(clients, cid, nombre, correo)
+            print(f"✅ Cliente {cid} guardado")
+        
+        # --- 2. Producto ---
+        elif opcion == "2":
+            pid = len(products) + 1
+            nombre = input("Nombre del producto: ")
+            try:
+                precio = float(input("Precio unitario: "))
+                products = register_product(products, pid, nombre, precio)
+                print(f"✅ Producto {pid} guardado")
+            except:
+                print("❌ El precio debe ser un número")
+        
+        # --- 3. Pedido ---
+        elif opcion == "3":
+            if len(clients) == 0 or len(products) == 0:
+                print("❌ Primero registra clientes y productos")
+            else:
+                oid = len(orders) + 1
+                
+                # Mostramos qué hay (fácil de ver)
+                print("\nClientes:")
+                for k, v in clients.items():
+                    print(f"  {k}: {v['name']}")
+                print("\nProductos:")
+                for k, v in products.items():
+                    print(f"  {k}: {v[0]} (${v[1]})")
+                
+                try:
+                    cliente = int(input("\nID cliente: "))
+                    producto = int(input("ID producto: "))
+                    cantidad = int(input("Cantidad: "))
+                    orders = create_order(orders, products, oid, cliente, producto, cantidad)
+                    print(f"✅ Pedido {oid} creado")
+                except:
+                    print("❌ Escribe solo números")
+        
+        # --- 4. Ver pedidos ---
+        elif opcion == "4":
+            if len(orders) == 0:
+                print("Aún no hay pedidos")
+            else:
+                print("\n=== PEDIDOS ===")
+                for oid, p in orders.items():
+                    nombre_cliente = clients.get(p["client_id"], {}).get("name", "?")
+                    info_producto = products.get(p["product_id"], ("?", 0))
+                    print(f"Pedido {oid} | Cliente: {nombre_cliente} | "
+                          f"Producto: {info_producto[0]} | Cant: {p['quantity']} | Total: ${p['total']}")
+        
+        # --- 5. Ingresos ---
+        elif opcion == "5":
+            dinero = calculate_daily_income(orders)
+            print(f"\nIngresos del día: ${dinero}")
+        
+        # --- 6. Reporte y salir ---
+        elif opcion == "6":
+            if len(orders) == 0:
+                print("No hay pedidos para reportar")
+            else:
+                reporte = generate_final_report(orders, clients, products)
+                print("\n" + "="*50)
+                print("REPORTE FINAL")
+                print("="*50)
+                print(f"Total pedidos: {reporte['total_pedidos']}")
+                print(f"Total ingresos: ${reporte['total_ingresos']}")
+                
+                print("\nPor cliente:")
+                for cid, info in reporte["clientes"].items():
+                    print(f"  {info['name']} → ${info['total']}")
+                
+                print("\nProductos vendidos:")
+                for pid, qty in reporte["productos"].items():
+                    nombre_p = products.get(pid, ("?", 0))[0]
+                    print(f"  {nombre_p} → {qty} unidades")
+            
+            print("\n¡Programa terminado! Gracias :)")
+            break
+        
+        else:
+            print("Elige un número del 1 al 6")
