@@ -2,7 +2,9 @@ clientes = {
 
 }
 
+producto = {
 
+}
 
 
 def register_clients():
@@ -25,9 +27,32 @@ def register_product():
     name_product = input("Ingrese el nombre del producto: ")  
     unit_price = float(input("Ingrese el precio: "))
 
-    ti = (product_id, name_product, unit_price)
+    producto[product_id] = (product_id, name_product, unit_price)
 
-    print(ti)
+    print("¡Registro exitoso!")
 
 
-def creation():
+
+
+def menu_principal():
+
+    while True:
+        print("Menu principal")
+        print("1. Registro de clientes ")
+        print("2. Registro de producto ")
+        print("3. Creacion de pedidos ")
+        print("4. Consulta de pedidos ")
+        print("5. Salir")
+
+        option = int(input("Ingrese la opcion deseada: "))
+
+        if option == 1:
+            register_clients()
+        if option == 2:
+            register_product()
+
+
+
+
+if __name__ == "__main__":
+    menu_principal()
