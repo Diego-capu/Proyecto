@@ -24,12 +24,6 @@ All data is stored in global dictionaries during program execution. The code is 
 - **orders** (dictionary):  
   `order_id → {"client_id": int, "product_id": int, "quantity": int, "total": float}`
 
-## How to Run the Program
-
-1. Clone or download the repository
-2. Make sure you have Python 3.x installed
-3. Open a terminal in the project folder
-4. Run the command:
 
 ```bash
 python main.py
